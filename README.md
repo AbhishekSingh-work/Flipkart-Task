@@ -1,4 +1,4 @@
-# ())Logistics - Product Verification System
+# Logistics - Product Verification System
 
 Logistics Verification Hub is a high-performance warehouse management companion system. It supports bulk ingestion of catalog datasets, physical barcode/expiry verification on the warehouse floor via mobile/desktop webcam capture, and comprehensive QA compliance auditing.
 
