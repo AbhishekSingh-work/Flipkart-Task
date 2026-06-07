@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let webcamStream = null;
     let capturedBlob = null;
     let currentLookupProduct = null;
+    let authToken = localStorage.getItem("auth_token");
+    let currentUser = null;
     const pollingIntervals = {};
 
     // --- DOM Elements ---
@@ -14,6 +16,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const pageTitle = document.getElementById("page-title");
     const pageSubtitle = document.getElementById("page-subtitle");
     const displayOperator = document.getElementById("display-operator");
+    const displayRole = document.getElementById("display-role");
+    const loginForm = document.getElementById("login-form");
+    const loginUsername = document.getElementById("login-username");
+    const loginPassword = document.getElementById("login-password");
+    const btnLogin = document.getElementById("btn-login");
+    const btnLogout = document.getElementById("btn-logout");
     
     // Ingestion Elements
     const dropzone = document.getElementById("upload-dropzone");
@@ -68,6 +76,109 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalTitleWid = document.getElementById("modal-title-wid");
     const modalTitleOperator = document.getElementById("modal-title-operator");
 
+    // --- Auth Helpers ---
+    async function apiFetch(url, options = {}) {
+        const headers = new Headers(options.headers || {});
+        if (authToken) {
+            headers.set("Authorization", `Bearer ${authToken}`);
+        }
+
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+            logout("Session expired. Please login again.");
+        }
+        return response;
+    }
+
+    function hasPermission(permission) {
+        return currentUser && currentUser.permissions.includes(permission);
+    }
+
+    function applyAccessControls() {
+        navItems.forEach(item => {
+            const permission = item.dataset.permission;
+            item.style.display = hasPermission(permission) ? "flex" : "none";
+        });
+
+        displayOperator.innerText = currentUser.display_name;
+        displayRole.innerText = currentUser.role === "admin" ? "Warehouse Admin" : "Warehouse Floor";
+        operatorNameInput.value = currentUser.display_name;
+        operatorNameInput.readOnly = true;
+        localStorage.setItem("operator_name", currentUser.display_name);
+    }
+
+    function firstAllowedTab() {
+        const allowedItem = Array.from(navItems).find(item => item.style.display !== "none");
+        return allowedItem ? allowedItem.getAttribute("href").substring(1) : "validation";
+    }
+
+    function activateSession(session) {
+        currentUser = session.user || session;
+        applyAccessControls();
+        document.body.classList.add("authenticated");
+        switchTab(firstAllowedTab());
+    }
+
+    function logout(message) {
+        authToken = null;
+        currentUser = null;
+        localStorage.removeItem("auth_token");
+        stopWebcam();
+        document.body.classList.remove("authenticated");
+        loginPassword.value = "";
+        if (message) showToast(message, "warning");
+    }
+
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            btnLogin.disabled = true;
+            btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging in...';
+
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: loginUsername.value.trim(),
+                    password: loginPassword.value
+                })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || "Login failed.");
+            }
+
+            const session = await response.json();
+            authToken = session.access_token;
+            localStorage.setItem("auth_token", authToken);
+            activateSession(session);
+            showToast(`Welcome, ${session.user.display_name}.`, "success");
+        } catch (err) {
+            showToast(err.message, "error");
+        } finally {
+            btnLogin.disabled = false;
+            btnLogin.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
+        }
+    });
+
+    btnLogout.addEventListener("click", () => logout("Logged out successfully."));
+
+    async function initializeSession() {
+        if (!authToken) return;
+
+        try {
+            const response = await apiFetch("/api/auth/me");
+            if (!response.ok) throw new Error("Stored session is invalid.");
+            const user = await response.json();
+            activateSession(user);
+        } catch (err) {
+            localStorage.removeItem("auth_token");
+            authToken = null;
+        }
+    }
+
     // --- Tab Navigation Logic ---
     navItems.forEach(item => {
         item.addEventListener("click", (e) => {
@@ -78,6 +189,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function switchTab(tabId) {
+        const navItem = document.querySelector(`.nav-item[href="#${tabId}"]`);
+        const permission = navItem ? navItem.dataset.permission : tabId;
+        if (!hasPermission(permission)) {
+            showToast("Your role cannot access that section.", "warning");
+            tabId = firstAllowedTab();
+        }
+
         activeTab = tabId;
         navItems.forEach(item => {
             if (item.getAttribute("href") === `#${tabId}`) {
@@ -140,13 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
             toast.style.animation = "toastSlide 0.3s reverse forwards";
             setTimeout(() => toast.remove(), 300);
         }, 3000);
-    }
-
-    // --- Operator Name Caching (Usability) ---
-    const cachedName = localStorage.getItem("operator_name");
-    if (cachedName) {
-        operatorNameInput.value = cachedName;
-        displayOperator.innerText = cachedName;
     }
 
     operatorNameInput.addEventListener("input", (e) => {
@@ -256,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnLookup.disabled = true;
             btnLookup.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
             
-            const response = await fetch(`/api/validation/product/${wid}`);
+            const response = await apiFetch(`/api/validation/product/${wid}`);
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.detail || "Lookup failed.");
@@ -360,7 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnSubmitVerification.disabled = true;
             btnSubmitVerification.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
             
-            const response = await fetch("/api/validation/verify", {
+            const response = await apiFetch("/api/validation/verify", {
                 method: "POST",
                 body: formData
             });
@@ -445,7 +556,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             showToast("Uploading dataset...", "info");
-            const response = await fetch("/api/ingestion/upload", {
+            const response = await apiFetch("/api/ingestion/upload", {
                 method: "POST",
                 body: formData
             });
@@ -510,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         pollingIntervals[jobId] = setInterval(async () => {
             try {
-                const response = await fetch(`/api/ingestion/status/${jobId}`);
+                const response = await apiFetch(`/api/ingestion/status/${jobId}`);
                 if (!response.ok) return;
                 
                 const job = await response.json();
@@ -558,7 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadRecentJobs() {
         try {
-            const response = await fetch("/api/ingestion/recent");
+            const response = await apiFetch("/api/ingestion/recent");
             if (!response.ok) return;
             const jobs = await response.json();
             
@@ -607,7 +718,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnRunReport.disabled = true;
             btnRunReport.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
             
-            const response = await fetch(`/api/reporting/report?start_date=${start}&end_date=${end}`);
+            const response = await apiFetch(`/api/reporting/report?start_date=${start}&end_date=${end}`);
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.detail || "Query failed.");
@@ -767,6 +878,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // --- Initialization ---
-    // Start on floor validation tab
-    switchTab("validation");
+    initializeSession();
 });

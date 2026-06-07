@@ -6,7 +6,7 @@ Logistics Verification Hub is a high-performance warehouse management companion 
 
 ### Architecture Diagram
 
-![1780844584089](image/README/1780844584089.png)
+![1780846600356](image/README/1780846600356.png)
 
 ## Key Features
 
@@ -24,7 +24,12 @@ Logistics Verification Hub is a high-performance warehouse management companion 
 
    - Generates date-range activity reports detailing scanned records, warning thresholds, data discrepancies, and links to photo proof.
    - Supports client-side sorting, status filtering, and dynamic CSV downloads.
-4. **Zero-Configuration Fallbacks**:
+4. **Login & Role Based Access Control**:
+
+   - Adds a themed login page before the dashboard loads.
+   - Supports two demo roles: `operator` can access floor validation, while `admin` can access validation, bulk ingestion, and reporting.
+   - Protects the API with bearer-token authentication and FastAPI role dependencies, so restricted sections are enforced on both frontend and backend.
+5. **Zero-Configuration Fallbacks**:
 
    - **No Redis?** Celery task execution falls back to synchronous eager execution mode automatically.
    - **No AWS S3?** Snapped verification images automatically save to the local filesystem (`app/static/uploads`) under a static mount.
@@ -121,7 +126,7 @@ AWS_DEFAULT_REGION=us-east-1
 
 ## Running the Application
 
-### Option A: Quick Start (Eager Fallback Mode - No Redis Required)
+### Option A: Quick Start (Eager Fallback Mode - No Redis Required)[Not Recommended (Too slow)]
 
 Simply launch the FastAPI server. Background operations will process synchronously on the main thread:
 
@@ -130,6 +135,19 @@ python run.py
 ```
 
 Visit the web dashboard at: **`http://localhost:8000/`**
+
+Demo login credentials:
+
+| Role     | Username     | Password        | Access                           |
+| -------- | ------------ | --------------- | -------------------------------- |
+| Operator | `operator` | `operator123` | Validation                       |
+| Admin    | `admin`    | `admin123`    | Validation, ingestion, reporting |
+
+You can override the demo users with the `AUTH_USERS` environment variable:
+
+```ini
+AUTH_USERS=operator=operator123:operator:Floor Operator,admin=admin123:admin:Warehouse Admin
+```
 
 ### Option B: Production Stack (Async Mode - Redis Required) [Recommended]
 
@@ -202,15 +220,27 @@ The test runner will:
 
 ***Few Screenshots***
 
+**Login Screen**
+
+![1780848937280](image/README/1780848937280.png)
+
+**User Role: Admin**
+
+![1780848999101](image/README/1780848999101.png)
+
+**User Role: Operator**
+
+![1780849049564](image/README/1780849049564.png)
+
 **Product Record fetching**
 
 ![1780836034705](image/README/1780836034705.png)
 
-**Product validation and Submission for verification log**
+**Product Validation and Submission for Verification Log**
 
 ![1780836187234](image/README/1780836187234.png)
 
-**Bulk data ingestion**
+**Bulk Data Ingestion**
 
 ![1780836078192](image/README/1780836078192.png)
 

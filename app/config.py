@@ -41,3 +41,11 @@ AWS_DEFAULT_REGION = os.getenv("AWS_DEFAULT_REGION", "us-east-1")
 
 # Performance Settings
 CHUNK_SIZE = int(os.getenv("INGESTION_CHUNK_SIZE", "50000"))
+
+# Demo authentication users for the interview build.
+# Format: username=password:role:Display Name
+DEFAULT_AUTH_USERS = (
+    "operator=operator123:operator:Floor Operator,"
+    "admin=admin123:admin:Warehouse Admin"
+)
+AUTH_USERS = os.getenv("AUTH_USERS", DEFAULT_AUTH_USERS)

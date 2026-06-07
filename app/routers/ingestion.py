@@ -7,6 +7,7 @@ from fastapi import APIRouter, UploadFile, File, BackgroundTasks, HTTPException,
 from typing import List
 from app.config import TEMP_DIR
 from app.db import db_session
+from app.auth import AuthUser, require_permissions
 from app.schemas import IngestionJobResponse
 from app.celery_app import process_csv_ingestion
 from app.crud import (
@@ -16,9 +17,13 @@ from app.crud import (
 )
 
 router = APIRouter(prefix="/api/ingestion", tags=["ingestion"])
+require_ingestion_access = require_permissions(["ingestion"])
 
 @router.post("/upload", response_model=IngestionJobResponse)
-async def upload_csv(file: UploadFile = File(...)):
+async def upload_csv(
+    file: UploadFile = File(...),
+    _: AuthUser = Depends(require_ingestion_access)
+):
     """
     Uploads a CSV file containing product data.
     Validates headers immediately, saves the file, and dispatches an async Celery task.
@@ -85,7 +90,7 @@ async def upload_csv(file: UploadFile = File(...)):
     return job_data
 
 @router.get("/status/{job_id}", response_model=IngestionJobResponse)
-def get_job_status(job_id: str):
+def get_job_status(job_id: str, _: AuthUser = Depends(require_ingestion_access)):
     """
     Checks the status and completion percentage of an ingestion job.
     """
@@ -104,7 +109,10 @@ def get_job_status(job_id: str):
         )
 
 @router.get("/recent", response_model=List[IngestionJobResponse])
-def list_recent_jobs(limit: int = 5):
+def list_recent_jobs(
+    limit: int = 5,
+    _: AuthUser = Depends(require_ingestion_access)
+):
     """
     Lists recent CSV ingestion activities.
     """

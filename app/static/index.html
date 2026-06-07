@@ -14,6 +14,45 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
+    <!-- Login Screen -->
+    <section class="login-screen" id="login-screen">
+        <div class="login-card glass-card">
+            <div class="login-brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>LOGISTICS</h1>
+                    <span>VERIFICATION HUB</span>
+                </div>
+            </div>
+
+            <form id="login-form" class="login-form">
+                <h2>Secure Access</h2>
+                <p>Sign in with your assigned warehouse role.</p>
+
+                <div class="form-group">
+                    <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
+                    <input type="text" id="login-username" required autocomplete="username" placeholder="operator or admin">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+                    <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter password">
+                </div>
+
+                <button type="submit" id="btn-login" class="btn btn-primary btn-block">
+                    <i class="fa-solid fa-right-to-bracket"></i> Login
+                </button>
+
+                <div class="demo-credentials">
+                    <span><strong>Operator:</strong> operator / operator123</span>
+                    <span><strong>Admin:</strong> admin / admin123</span>
+                </div>
+            </form>
+        </div>
+    </section>
+
     <!-- App Container -->
     <div class="app-container">
         <!-- Sidebar Navigation -->
@@ -29,17 +68,17 @@
             </div>
             
             <nav class="nav-menu">
-                <a href="#validation" class="nav-item active" id="tab-validation">
+                <a href="#validation" class="nav-item active" id="tab-validation" data-permission="validation">
                     <i class="fa-solid fa-barcode"></i>
                     <span>Floor Validation</span>
                 </a>
-                <a href="#ingestion" class="nav-item" id="tab-ingestion">
+                <a href="#ingestion" class="nav-item" id="tab-ingestion" data-permission="ingestion">
                     <i class="fa-solid fa-file-import"></i>
                     <span>Bulk Ingestion</span>
                 </a>
-                <a href="#reporting" class="nav-item" id="tab-reporting">
+                <a href="#reporting" class="nav-item" id="tab-reporting" data-permission="reporting">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>QA Reporting</span>
+                    <span>Admin Reporting</span>
                 </a>
             </nav>
             
@@ -65,8 +104,11 @@
                     </div>
                     <div class="user-info">
                         <span class="username" id="display-operator">Operator Mode</span>
-                        <span class="user-role">Warehouse Floor</span>
+                        <span class="user-role" id="display-role">Warehouse Floor</span>
                     </div>
+                    <button type="button" id="btn-logout" class="btn btn-secondary btn-sm" title="Logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
                 </div>
             </header>
 

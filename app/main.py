@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from app.db import init_db
-from app.routers import ingestion, validation, reporting
+from app.routers import auth, ingestion, validation, reporting
 from app.config import UPLOAD_DIR, BASE_DIR
 
 # 1. Initialize database on module load or import
@@ -13,7 +13,7 @@ init_db()
 # 2. Setup FastAPI application
 app = FastAPI(
     title="Product Verification System",
-    description="Bulk ingestion, on-the-floor physical verification, and QA auditing reports.",
+    description="Bulk ingestion, on-the-floor physical verification, admin reporting, and role based access controls.",
     version="1.0.0"
 )
 
@@ -27,6 +27,7 @@ app.add_middleware(
 )
 
 # 4. Include API Routers
+app.include_router(auth.router)
 app.include_router(ingestion.router)
 app.include_router(validation.router)
 app.include_router(reporting.router)

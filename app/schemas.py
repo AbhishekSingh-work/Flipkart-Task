@@ -48,3 +48,18 @@ class VerificationSummary(BaseModel):
 class ReportResponse(BaseModel):
     summary: VerificationSummary
     activities: List[VerificationResponse]
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class UserSession(BaseModel):
+    username: str
+    display_name: str
+    role: str
+    permissions: List[str]
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserSession

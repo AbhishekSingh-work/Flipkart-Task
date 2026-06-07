@@ -343,6 +343,7 @@ body {
 }
 
 input[type="text"],
+input[type="password"],
 input[type="date"],
 select {
     width: 100%;
@@ -357,12 +358,75 @@ select {
 }
 
 input[type="text"]:focus,
+input[type="password"]:focus,
 input[type="date"]:focus,
 select:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 10px rgba(79, 172, 254, 0.25);
     background-color: rgba(0, 0, 0, 0.35);
+}
+
+/* --- Login Screen --- */
+.login-screen {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: radial-gradient(circle at 50% 10%, rgba(79, 172, 254, 0.12), transparent 34%),
+                radial-gradient(circle at 85% 75%, rgba(0, 242, 254, 0.08), transparent 30%),
+                var(--bg-main);
+}
+
+body.authenticated .login-screen {
+    display: none;
+}
+
+body:not(.authenticated) .app-container {
+    display: none;
+}
+
+body.authenticated .app-container {
+    display: flex;
+}
+
+.login-card {
+    width: min(100%, 420px);
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.login-form h2 {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.login-form > p {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+}
+
+.demo-credentials {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.02);
+    color: var(--color-text-muted);
+    font-size: 12px;
 }
 
 .form-help {

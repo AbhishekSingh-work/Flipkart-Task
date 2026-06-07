@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from datetime import datetime, timedelta
 from typing import Optional
 from app.db import db_session
+from app.auth import AuthUser, require_permissions
 from app.schemas import ReportResponse
 from app.crud import get_verifications_report
 
 router = APIRouter(prefix="/api/reporting", tags=["reporting"])
+require_reporting_access = require_permissions(["reporting"])
 
 @router.get("/report", response_model=ReportResponse)
 def generate_report(
@@ -16,7 +18,8 @@ def generate_report(
     end_date: Optional[str] = Query(
         None, 
         description="End date in YYYY-MM-DD format (defaults to today)"
-    )
+    ),
+    _: AuthUser = Depends(require_reporting_access)
 ):
     """
     Retrieves verification records and aggregated summary statistics in the specified date range.

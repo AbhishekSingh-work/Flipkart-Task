@@ -6,6 +6,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from typing import Optional
 from app.config import TEMP_DIR
 from app.db import db_session
+from app.auth import AuthUser, require_permissions
 from app.schemas import ProductResponse, VerificationResponse
 from app.s3_helper import upload_verification_image
 from app.crud import (
@@ -14,9 +15,10 @@ from app.crud import (
 )
 
 router = APIRouter(prefix="/api/validation", tags=["validation"])
+require_validation_access = require_permissions(["validation"])
 
 @router.get("/product/{wid}", response_model=ProductResponse)
-def lookup_product(wid: str):
+def lookup_product(wid: str, _: AuthUser = Depends(require_validation_access)):
     """
     Looks up a product by its Warehouse ID (WID) to display details.
     """
@@ -41,7 +43,8 @@ def lookup_product(wid: str):
 async def verify_product(
     wid: str = Form(..., description="Unique Warehouse ID"),
     operator_name: str = Form(..., description="Name of the operator checking the product"),
-    image: Optional[UploadFile] = File(None)
+    image: Optional[UploadFile] = File(None),
+    _: AuthUser = Depends(require_validation_access)
 ):
     """
     Logs a verification event.
