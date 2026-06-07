@@ -129,7 +129,7 @@ Visit the web dashboard at: **`http://localhost:8000/`**
 
 ### Option B: Production Stack (Async Mode - Redis Required)
 
-1. Ensure your Redis server is running locally on port `6379` (make sure you have docker running).
+1. Ensure your Redis server is running locally on port `6379` (make sure you have docker running)[For windows use setup with docker as redis not natively supported on windows].
 
    ```
    docker run -d --name redis -p 6379:6379 redis
