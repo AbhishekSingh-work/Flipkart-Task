@@ -89,16 +89,30 @@ def get_job_status(job_id: str):
     """
     Checks the status and completion percentage of an ingestion job.
     """
-    with db_session() as conn:
-        job = get_ingestion_job(conn, job_id)
-        if not job:
-            raise HTTPException(status_code=404, detail="Job ID not found.")
-        return job
+    try:
+        with db_session() as conn:
+            job = get_ingestion_job(conn, job_id)
+            if not job:
+                raise HTTPException(status_code=404, detail="Job ID not found.")
+            return job
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database query failed: {str(e)}"
+        )
 
 @router.get("/recent", response_model=List[IngestionJobResponse])
 def list_recent_jobs(limit: int = 5):
     """
     Lists recent CSV ingestion activities.
     """
-    with db_session() as conn:
-        return get_recent_ingestion_jobs(conn, limit)
+    try:
+        with db_session() as conn:
+            return get_recent_ingestion_jobs(conn, limit)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to list recent jobs: {str(e)}"
+        )

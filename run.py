@@ -4,7 +4,7 @@ from app.config import REDIS_AVAILABLE, CELERY_ALWAYS_EAGER
 
 def main():
     print("=" * 60)
-    print("             APEX LOGISTICS VERIFICATION HUB")
+    print("               LOGISTICS VERIFICATION HUB")
     print("=" * 60)
     print(f"Python Version: {sys.version}")
     
@@ -24,7 +24,7 @@ def main():
     print("=" * 60)
     
     # Run Uvicorn
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=False)
 
 if __name__ == "__main__":
     main()

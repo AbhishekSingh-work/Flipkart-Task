@@ -20,14 +20,22 @@ def lookup_product(wid: str):
     """
     Looks up a product by its Warehouse ID (WID) to display details.
     """
-    with db_session() as conn:
-        product = get_product(conn, wid.strip())
-        if not product:
-            raise HTTPException(
-                status_code=404, 
-                detail=f"Product with WID '{wid}' not found in inventory."
-            )
-        return product
+    try:
+        with db_session() as conn:
+            product = get_product(conn, wid.strip())
+            if not product:
+                raise HTTPException(
+                    status_code=404, 
+                    detail=f"Product with WID '{wid}' not found in inventory."
+                )
+            return product
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database lookup failed: {str(e)}"
+        )
 
 @router.post("/verify", response_model=VerificationResponse)
 async def verify_product(
