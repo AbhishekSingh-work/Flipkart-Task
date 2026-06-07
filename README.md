@@ -188,6 +188,7 @@ The test runner will:
 - Submit a mock physical verification event, complete with label image upload.
 - Fetch the QA Audit Report for verification.
 
+**Note -** **Currently not using S3 (Not added creds for S3) instead storing images locally but have integrated S3.**
 
 ***RESULTS:***
 
