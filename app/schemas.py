@@ -63,3 +63,9 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserSession
+
+class UserCreateRequest(BaseModel):
+    username: str
+    password: str
+    display_name: str
+    role: str

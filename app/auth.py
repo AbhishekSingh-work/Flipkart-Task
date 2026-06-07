@@ -10,7 +10,7 @@ from app.config import AUTH_USERS
 
 ROLE_PERMISSIONS = {
     "operator": {"validation"},
-    "admin": {"validation", "ingestion", "reporting"},
+    "admin": {"validation", "ingestion", "reporting", "users"},
 }
 
 
@@ -65,6 +65,36 @@ def authenticate_user(username: str, password: str) -> AuthUser | None:
     if not user or not secrets.compare_digest(user.password, password):
         return None
     return user
+
+
+def create_user(username: str, password: str, role: str, display_name: str) -> AuthUser:
+    username = username.strip()
+    role = role.strip().lower()
+    display_name = display_name.strip()
+
+    if not username:
+        raise ValueError("Username is required.")
+    if username in AUTH_USER_STORE:
+        raise ValueError("A user with this username already exists.")
+    if role not in ROLE_PERMISSIONS:
+        raise ValueError("Unsupported role selected.")
+    if len(password) < 6:
+        raise ValueError("Password must be at least 6 characters.")
+    if not display_name:
+        raise ValueError("Display name is required.")
+
+    user = AuthUser(
+        username=username,
+        password=password,
+        role=role,
+        display_name=display_name,
+    )
+    AUTH_USER_STORE[username] = user
+    return user
+
+
+def list_users() -> list[AuthUser]:
+    return sorted(AUTH_USER_STORE.values(), key=lambda user: user.username)
 
 
 def create_access_token(user: AuthUser) -> str:

@@ -61,6 +61,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnRunReport = document.getElementById("btn-run-report");
     const btnExportCsv = document.getElementById("btn-export-csv");
     const tableBody = document.getElementById("report-table-body");
+
+    // User Management Elements
+    const userCreateForm = document.getElementById("user-create-form");
+    const newDisplayName = document.getElementById("new-display-name");
+    const newUsername = document.getElementById("new-username");
+    const newPassword = document.getElementById("new-password");
+    const newRole = document.getElementById("new-role");
+    const btnCreateUser = document.getElementById("btn-create-user");
+    const usersList = document.getElementById("users-list");
     
     // Stats Elements
     const statTotal = document.getElementById("stat-total");
@@ -219,10 +228,16 @@ document.addEventListener("DOMContentLoaded", () => {
             pageSubtitle.innerText = "Verify manufacturing and expiry details in real-time";
             startWebcam();
         } else {
-            pageTitle.innerText = tabId === "ingestion" ? "Bulk Dataset Ingestion" : "Quality Assurance Reports";
-            pageSubtitle.innerText = tabId === "ingestion" 
-                ? "Process large inventory datasets via background task queues" 
-                : "Auditing metrics, discrepancies tracking, and exports";
+            if (tabId === "ingestion") {
+                pageTitle.innerText = "Bulk Dataset Ingestion";
+                pageSubtitle.innerText = "Process large inventory datasets via background task queues";
+            } else if (tabId === "users") {
+                pageTitle.innerText = "User Management";
+                pageSubtitle.innerText = "Create accounts and assign warehouse access roles";
+            } else {
+                pageTitle.innerText = "Admin Reports";
+                pageSubtitle.innerText = "Auditing metrics, discrepancies tracking, and exports";
+            }
             stopWebcam();
         }
 
@@ -232,6 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (tabId === "reporting") {
             initReportDates();
+        }
+
+        if (tabId === "users") {
+            loadUsers();
         }
     }
 
@@ -690,6 +709,86 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
         }
     }
+
+
+    // --- User Management Logic ---
+    function renderUsers(users) {
+        usersList.innerHTML = "";
+
+        if (users.length === 0) {
+            usersList.innerHTML = `
+                <div class="table-empty">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <p>No users found.</p>
+                </div>
+            `;
+            return;
+        }
+
+        users.forEach(user => {
+            const row = document.createElement("div");
+            row.className = "user-row";
+            row.innerHTML = `
+                <div>
+                    <h4>${user.display_name}</h4>
+                    <p>@${user.username} · ${user.permissions.join(", ")}</p>
+                </div>
+                <span class="role-chip">${user.role}</span>
+            `;
+            usersList.appendChild(row);
+        });
+    }
+
+    async function loadUsers() {
+        try {
+            const response = await apiFetch("/api/auth/users");
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || "Unable to load users.");
+            }
+
+            const users = await response.json();
+            renderUsers(users);
+        } catch (err) {
+            showToast(err.message, "error");
+        }
+    }
+
+    userCreateForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        try {
+            btnCreateUser.disabled = true;
+            btnCreateUser.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
+
+            const response = await apiFetch("/api/auth/users", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    display_name: newDisplayName.value.trim(),
+                    username: newUsername.value.trim(),
+                    password: newPassword.value,
+                    role: newRole.value
+                })
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.detail || "Unable to create user.");
+            }
+
+            const created = await response.json();
+            showToast(`Created ${created.role} user ${created.username}.`, "success");
+            userCreateForm.reset();
+            newRole.value = "operator";
+            loadUsers();
+        } catch (err) {
+            showToast(err.message, "error");
+        } finally {
+            btnCreateUser.disabled = false;
+            btnCreateUser.innerHTML = '<i class="fa-solid fa-user-plus"></i> Create User';
+        }
+    });
 
 
     // --- Reporting & QA Logic ---

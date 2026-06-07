@@ -1104,6 +1104,71 @@ body.authenticated .app-container {
     gap: 12px;
 }
 
+/* --- Section 4: User Management --- */
+.users-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(360px, 1.1fr);
+    gap: 32px;
+    align-items: start;
+}
+
+.form-grid-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.user-create-form .btn {
+    min-width: 170px;
+}
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 16px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.user-row h4 {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    margin-bottom: 3px;
+}
+
+.user-row p {
+    color: var(--color-text-muted);
+    font-size: 12px;
+}
+
+.role-chip {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid var(--border-color-active);
+    color: var(--color-accent);
+    background-color: rgba(0, 242, 254, 0.08);
+}
+
+@media (max-width: 1024px) {
+    .users-layout,
+    .form-grid-two {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Auditing Table Grid */
 .report-grid-card {
     padding: 24px 0;

@@ -20,14 +20,15 @@ Logistics Verification Hub is a high-performance warehouse management companion 
    - Fetches product details (EAN, Mfg/Expiry dates) dynamically by Warehouse ID (WID) with under **20ms query latency**.
    - Integrates HTML5 MediaDevices camera API for snapping photos of printed physical product labels.
    - Automatically caches the active operator's name locally using `localStorage` for improved UX.
-3. **QA Audit Reports & Analytics**:
+3. **Admin Audit Reports & Analytics**:
 
    - Generates date-range activity reports detailing scanned records, warning thresholds, data discrepancies, and links to photo proof.
    - Supports client-side sorting, status filtering, and dynamic CSV downloads.
 4. **Login & Role Based Access Control**:
 
    - Adds a themed login page before the dashboard loads.
-   - Supports two demo roles: `operator` can access floor validation, while `admin` can access validation, bulk ingestion, and reporting.
+   - Supports two demo roles: `operator` can access floor validation, while `admin` can access validation, bulk ingestion, reporting, and user management.
+   - Includes an admin-only User Management page to create users and assign either `operator` or `admin` role access.
    - Protects the API with bearer-token authentication and FastAPI role dependencies, so restricted sections are enforced on both frontend and backend.
 5. **Zero-Configuration Fallbacks**:
 
@@ -41,7 +42,7 @@ Logistics Verification Hub is a high-performance warehouse management companion 
 - **Backend**: FastAPI, Uvicorn, SQLite3, Pydantic, Celery.
 - **Storage & Services**: AWS S3 (`boto3` client), Redis (Celery Broker).
 - **Frontend**: Vanilla HTML5, CSS3 (Glassmorphic dark design system), Vanilla JavaScript.
-- **Development & Testing**: `requests` for API performance testing, `aiofiles` for async file writing, `uv` for python environment tracking.
+- **Development & Testing**: `requests` for API performance testing, `httpx` for FastAPI/Starlette test-client support, `aiofiles` for async file writing, `uv` for python environment tracking.
 
 ---
 
@@ -55,8 +56,9 @@ Flipkart Task/
 │   │   ├── js/app.js         # Camera, polling, and data grid interactions
 │   │   └── index.html        # App dashboard layout
 │   ├── routers/              # API Endpoints
-│   │   ├── Ingestion.py       # CSV upload & polling
-│   │   ├── reporting.py      # QA metrics & audit queries
+│   │   ├── auth.py           # Login, sessions, RBAC, and user creation
+│   │   ├── Ingestion.py      # CSV upload & polling
+│   │   ├── reporting.py      # Admin metrics & audit queries
 │   │   └── validation.py     # Product lookup & photo validation
 │   ├── celery_app.py         # Celery background tasks definition
 │   ├── config.py             # Server and storage configurations
@@ -138,10 +140,12 @@ Visit the web dashboard at: **`http://localhost:8000/`**
 
 Demo login credentials:
 
-| Role     | Username     | Password        | Access                           |
-| -------- | ------------ | --------------- | -------------------------------- |
-| Operator | `operator` | `operator123` | Validation                       |
-| Admin    | `admin`    | `admin123`    | Validation, ingestion, reporting |
+| Role     | Username   | Password      | Access                                            |
+| -------- | ---------- | ------------- | ------------------------------------------------- |
+| Operator | `operator` | `operator123` | Floor validation                                  |
+| Admin    | `admin`    | `admin123`    | Validation, ingestion, reporting, user management |
+
+Admin users can open **User Management** from the sidebar to create more users. Newly created users are available immediately for login while the server is running.
 
 You can override the demo users with the `AUTH_USERS` environment variable:
 
@@ -226,7 +230,15 @@ The test runner will:
 
 **User Role: Admin**
 
-![1780848999101](image/README/1780848999101.png)
+![1780849692731](image/README/1780849692731.png)
+
+**User Creation**
+
+![1780850067790](image/README/1780850067790.png)
+
+**New User Created and Logged In**
+
+![1780850228603](image/README/1780850228603.png)
 
 **User Role: Operator**
 

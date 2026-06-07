@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,15 @@
     <!-- Google Fonts: Inter & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
+
 <body>
     <!-- Login Screen -->
     <section class="login-screen" id="login-screen">
@@ -33,12 +37,14 @@
 
                 <div class="form-group">
                     <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
-                    <input type="text" id="login-username" required autocomplete="username" placeholder="operator or admin">
+                    <input type="text" id="login-username" required autocomplete="username"
+                        placeholder="operator or admin">
                 </div>
 
                 <div class="form-group">
                     <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
-                    <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter password">
+                    <input type="password" id="login-password" required autocomplete="current-password"
+                        placeholder="Enter password">
                 </div>
 
                 <button type="submit" id="btn-login" class="btn btn-primary btn-block">
@@ -66,7 +72,7 @@
                     <span>VERIFICATION HUB</span>
                 </div>
             </div>
-            
+
             <nav class="nav-menu">
                 <a href="#validation" class="nav-item active" id="tab-validation" data-permission="validation">
                     <i class="fa-solid fa-barcode"></i>
@@ -80,8 +86,12 @@
                     <i class="fa-solid fa-chart-line"></i>
                     <span>Admin Reporting</span>
                 </a>
+                <a href="#users" class="nav-item" id="tab-users" data-permission="users">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>User Management</span>
+                </a>
             </nav>
-            
+
             <div class="sidebar-footer">
                 <div class="system-status">
                     <span class="status-indicator online"></span>
@@ -121,7 +131,7 @@
                         <!-- Left Side: Scanner & Camera Input -->
                         <div class="glass-card input-card">
                             <h3 class="card-title"><i class="fa-solid fa-camera-retro"></i> Item Scan & Capture</h3>
-                            
+
                             <form id="verification-form" class="verification-form">
                                 <div class="form-group">
                                     <label for="operator_name"><i class="fa-solid fa-id-card"></i> Operator Name</label>
@@ -136,44 +146,48 @@
                                             <i class="fa-solid fa-magnifying-glass"></i>
                                         </button>
                                     </div>
-                                    <small class="form-help">Enter WID and check lookup to fetch details before capturing</small>
+                                    <small class="form-help">Enter WID and check lookup to fetch details before
+                                        capturing</small>
                                 </div>
 
                                 <div class="form-group camera-group">
                                     <label><i class="fa-solid fa-video"></i> Product Label Capture</label>
-                                    
+
                                     <div class="camera-viewport">
                                         <video id="webcam" autoplay playsinline></video>
                                         <canvas id="captured-canvas" style="display:none;"></canvas>
                                         <img id="captured-preview" class="captured-preview" style="display:none;">
-                                        
+
                                         <!-- Overlay Guideline for Camera -->
                                         <div class="camera-overlay" id="camera-overlay">
                                             <div class="scan-target-box"></div>
                                             <p class="scan-prompt">Align Product Label inside box</p>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="camera-controls">
                                         <button type="button" id="btn-capture" class="btn btn-accent btn-sm">
                                             <i class="fa-solid fa-camera"></i> Take Photo
                                         </button>
-                                        <button type="button" id="btn-retake" class="btn btn-danger btn-sm" style="display:none;">
+                                        <button type="button" id="btn-retake" class="btn btn-danger btn-sm"
+                                            style="display:none;">
                                             <i class="fa-solid fa-arrows-rotate"></i> Retake
                                         </button>
-                                        
+
                                         <div class="upload-fallback">
                                             <span>or</span>
                                             <label for="file-fallback" class="file-fallback-label">
                                                 <i class="fa-solid fa-upload"></i> Upload Image
                                             </label>
-                                            <input type="file" id="file-fallback" accept="image/*" capture="environment" style="display:none;">
+                                            <input type="file" id="file-fallback" accept="image/*" capture="environment"
+                                                style="display:none;">
                                         </div>
                                     </div>
                                     <div id="file-name-display" class="file-name-display"></div>
                                 </div>
 
-                                <button type="submit" id="btn-submit-verification" class="btn btn-primary btn-block" disabled>
+                                <button type="submit" id="btn-submit-verification" class="btn btn-primary btn-block"
+                                    disabled>
                                     <i class="fa-solid fa-circle-check"></i> Submit Verification Log
                                 </button>
                             </form>
@@ -181,8 +195,9 @@
 
                         <!-- Right Side: System Info & Label Comparison -->
                         <div class="glass-card result-card">
-                            <h3 class="card-title"><i class="fa-solid fa-circle-info"></i> Product Record Comparison</h3>
-                            
+                            <h3 class="card-title"><i class="fa-solid fa-circle-info"></i> Product Record Comparison
+                            </h3>
+
                             <!-- Placeholder -->
                             <div class="result-placeholder" id="result-placeholder">
                                 <div class="placeholder-icon">
@@ -224,14 +239,18 @@
                                 <div class="comparison-instructions">
                                     <h5><i class="fa-solid fa-triangle-exclamation"></i> Floor Action Required:</h5>
                                     <ul>
-                                        <li>Verify that the physical product's EAN matches <strong id="instruction-ean"></strong>.</li>
-                                        <li>Ensure the printed Expiry Date matches the system date <strong id="instruction-expiry"></strong>.</li>
-                                        <li>If the product is marked as <span class="text-danger">EXPIRED</span>, flag the item and place it in the disposal quarantine bin.</li>
+                                        <li>Verify that the physical product's EAN matches <strong
+                                                id="instruction-ean"></strong>.</li>
+                                        <li>Ensure the printed Expiry Date matches the system date <strong
+                                                id="instruction-expiry"></strong>.</li>
+                                        <li>If the product is marked as <span class="text-danger">EXPIRED</span>, flag
+                                            the item and place it in the disposal quarantine bin.</li>
                                     </ul>
                                 </div>
 
                                 <div class="action-alert" id="action-alert">
-                                    <i class="fa-solid fa-circle-check"></i> System record fetched. Ready for submission.
+                                    <i class="fa-solid fa-circle-check"></i> System record fetched. Ready for
+                                    submission.
                                 </div>
                             </div>
                         </div>
@@ -244,27 +263,38 @@
                     <div class="ingestion-layout">
                         <!-- Upload Card -->
                         <div class="glass-card upload-card">
-                            <h3 class="card-title"><i class="fa-solid fa-file-csv"></i> Upload CSV Inventory Dataset</h3>
-                            <p class="section-desc">Ingest physical inventory catalogs into the warehouse database. Supports large files containing millions of items via Celery background workers.</p>
-                            
+                            <h3 class="card-title"><i class="fa-solid fa-file-csv"></i> Upload CSV Inventory Dataset
+                            </h3>
+                            <p class="section-desc">Ingest physical inventory catalogs into the warehouse database.
+                                Supports large files containing millions of items via Celery background workers.</p>
+
                             <div class="upload-dropzone" id="upload-dropzone">
                                 <div class="dropzone-content">
                                     <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
                                     <p class="dropzone-text">Drag and drop your product CSV file here</p>
                                     <span>or</span>
-                                    <label for="csv-file-input" class="btn btn-secondary btn-sm dropzone-btn">Browse Files</label>
+                                    <label for="csv-file-input" class="btn btn-secondary btn-sm dropzone-btn">Browse
+                                        Files</label>
                                     <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
                                 </div>
                             </div>
-                            
+
                             <div class="csv-requirements">
                                 <h5>CSV Header Formats</h5>
                                 <p>To ensure database integrity, your CSV file must contain the following headers:</p>
                                 <div class="csv-cols-spec">
-                                    <div class="spec-col"><strong>WID</strong><span class="required-flag">*</span><p>Unique Physical Item ID</p></div>
-                                    <div class="spec-col"><strong>EAN</strong><span class="required-flag">*</span><p>Article Barcode EAN-13</p></div>
-                                    <div class="spec-col"><strong>Manufacturing_Date</strong><p>Mfg Date (YYYY-MM-DD)</p></div>
-                                    <div class="spec-col"><strong>Expiry_Date</strong><p>Expiry Date (YYYY-MM-DD)</p></div>
+                                    <div class="spec-col"><strong>WID</strong><span class="required-flag">*</span>
+                                        <p>Unique Physical Item ID</p>
+                                    </div>
+                                    <div class="spec-col"><strong>EAN</strong><span class="required-flag">*</span>
+                                        <p>Article Barcode EAN-13</p>
+                                    </div>
+                                    <div class="spec-col"><strong>Manufacturing_Date</strong>
+                                        <p>Mfg Date (YYYY-MM-DD)</p>
+                                    </div>
+                                    <div class="spec-col"><strong>Expiry_Date</strong>
+                                        <p>Expiry Date (YYYY-MM-DD)</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -272,7 +302,7 @@
                         <!-- Ingestion Jobs status tracker -->
                         <div class="glass-card jobs-card">
                             <h3 class="card-title"><i class="fa-solid fa-microchip"></i> Active Ingestion Tasks</h3>
-                            
+
                             <!-- No Jobs Placeholder -->
                             <div class="no-jobs" id="no-jobs-placeholder" style="display: none;">
                                 <i class="fa-solid fa-list-check"></i>
@@ -287,7 +317,7 @@
                 </section>
 
 
-                <!-- 3. QA REPORTING TAB -->
+                <!-- 3. ADMIN REPORTING TAB -->
                 <section id="sec-reporting" class="page-section">
                     <!-- Metrics Row -->
                     <div class="metrics-row">
@@ -373,7 +403,7 @@
                     <!-- Report Data Grid -->
                     <div class="glass-card report-grid-card">
                         <h3 class="card-title"><i class="fa-solid fa-table"></i> Audit Activity Logs</h3>
-                        
+
                         <div class="table-container">
                             <table class="report-table" id="report-table">
                                 <thead>
@@ -397,6 +427,50 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. USER MANAGEMENT TAB -->
+                <section id="sec-users" class="page-section">
+                    <div class="users-layout">
+                        <div class="glass-card user-create-card">
+                            <h3 class="card-title"><i class="fa-solid fa-user-plus"></i> Create User</h3>
+                            <form id="user-create-form" class="user-create-form">
+                                <div class="form-grid-two">
+                                    <div class="form-group">
+                                        <label for="new-display-name"><i class="fa-solid fa-id-badge"></i> Display Name</label>
+                                        <input type="text" id="new-display-name" required placeholder="Full name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="new-username"><i class="fa-solid fa-user"></i> Username</label>
+                                        <input type="text" id="new-username" required placeholder="login id">
+                                    </div>
+                                </div>
+
+                                <div class="form-grid-two">
+                                    <div class="form-group">
+                                        <label for="new-password"><i class="fa-solid fa-key"></i> Temporary Password</label>
+                                        <input type="password" id="new-password" required minlength="6" placeholder="Minimum 6 characters">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="new-role"><i class="fa-solid fa-shield-halved"></i> Role</label>
+                                        <select id="new-role" required>
+                                            <option value="operator">Operator</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="btn-create-user" class="btn btn-primary">
+                                    <i class="fa-solid fa-user-plus"></i> Create User
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="glass-card users-list-card">
+                            <h3 class="card-title"><i class="fa-solid fa-address-book"></i> Active Users</h3>
+                            <div class="users-list" id="users-list"></div>
                         </div>
                     </div>
                 </section>
@@ -425,4 +499,5 @@
     <!-- Custom JavaScript -->
     <script src="/static/js/app.js"></script>
 </body>
+
 </html>
