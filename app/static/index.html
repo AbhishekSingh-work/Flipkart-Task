@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Inventory - Product Verification System</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>APEX LOGISTICS</h1>
+                    <span>VERIFICATION HUB</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#validation" class="nav-item active" id="tab-validation">
+                    <i class="fa-solid fa-barcode"></i>
+                    <span>Floor Validation</span>
+                </a>
+                <a href="#ingestion" class="nav-item" id="tab-ingestion">
+                    <i class="fa-solid fa-file-import"></i>
+                    <span>Bulk Ingestion</span>
+                </a>
+                <a href="#reporting" class="nav-item" id="tab-reporting">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>QA Reporting</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="system-status">
+                    <span class="status-indicator online"></span>
+                    <span>System Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h2 id="page-title">Floor Product Validation</h2>
+                    <p id="page-subtitle">Verify manufacturing and expiry details in real-time</p>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="username" id="display-operator">Operator Mode</span>
+                        <span class="user-role">Warehouse Floor</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Container -->
+            <div class="page-container">
+
+                <!-- 1. FLOOR VALIDATION TAB -->
+                <section id="sec-validation" class="page-section active">
+                    <div class="validation-grid">
+                        <!-- Left Side: Scanner & Camera Input -->
+                        <div class="glass-card input-card">
+                            <h3 class="card-title"><i class="fa-solid fa-camera-retro"></i> Item Scan & Capture</h3>
+                            
+                            <form id="verification-form" class="verification-form">
+                                <div class="form-group">
+                                    <label for="operator_name"><i class="fa-solid fa-id-card"></i> Operator Name</label>
+                                    <input type="text" id="operator_name" required placeholder="Enter your full name">
+                                </div>
+
+                                <div class="form-group scanner-group">
+                                    <label for="wid"><i class="fa-solid fa-barcode"></i> Warehouse ID (WID)</label>
+                                    <div class="scanner-input-wrapper">
+                                        <input type="text" id="wid" required placeholder="Scan barcode or enter WID">
+                                        <button type="button" id="btn-lookup" class="btn btn-secondary">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+                                    </div>
+                                    <small class="form-help">Enter WID and check lookup to fetch details before capturing</small>
+                                </div>
+
+                                <div class="form-group camera-group">
+                                    <label><i class="fa-solid fa-video"></i> Product Label Capture</label>
+                                    
+                                    <div class="camera-viewport">
+                                        <video id="webcam" autoplay playsinline></video>
+                                        <canvas id="captured-canvas" style="display:none;"></canvas>
+                                        <img id="captured-preview" class="captured-preview" style="display:none;">
+                                        
+                                        <!-- Overlay Guideline for Camera -->
+                                        <div class="camera-overlay" id="camera-overlay">
+                                            <div class="scan-target-box"></div>
+                                            <p class="scan-prompt">Align Product Label inside box</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="camera-controls">
+                                        <button type="button" id="btn-capture" class="btn btn-accent btn-sm">
+                                            <i class="fa-solid fa-camera"></i> Take Photo
+                                        </button>
+                                        <button type="button" id="btn-retake" class="btn btn-danger btn-sm" style="display:none;">
+                                            <i class="fa-solid fa-arrows-rotate"></i> Retake
+                                        </button>
+                                        
+                                        <div class="upload-fallback">
+                                            <span>or</span>
+                                            <label for="file-fallback" class="file-fallback-label">
+                                                <i class="fa-solid fa-upload"></i> Upload Image
+                                            </label>
+                                            <input type="file" id="file-fallback" accept="image/*" capture="environment" style="display:none;">
+                                        </div>
+                                    </div>
+                                    <div id="file-name-display" class="file-name-display"></div>
+                                </div>
+
+                                <button type="submit" id="btn-submit-verification" class="btn btn-primary btn-block" disabled>
+                                    <i class="fa-solid fa-circle-check"></i> Submit Verification Log
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Right Side: System Info & Label Comparison -->
+                        <div class="glass-card result-card">
+                            <h3 class="card-title"><i class="fa-solid fa-circle-info"></i> Product Record Comparison</h3>
+                            
+                            <!-- Placeholder -->
+                            <div class="result-placeholder" id="result-placeholder">
+                                <div class="placeholder-icon">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </div>
+                                <h4>Scan a WID to Compare Data</h4>
+                                <p>WID lookup will retrieve manufacturing dates and expiry warnings from database.</p>
+                            </div>
+
+                            <!-- Real Result View (Fades in) -->
+                            <div class="result-data" id="result-data" style="display: none;">
+                                <div class="result-header">
+                                    <div class="result-header-text">
+                                        <h4 id="res-wid-title">WID: -</h4>
+                                        <p>Verification Status Analysis</p>
+                                    </div>
+                                    <span class="badge" id="res-expiry-badge">-</span>
+                                </div>
+
+                                <div class="comparison-grid">
+                                    <div class="comparison-item">
+                                        <div class="comp-label">European Article Number (EAN)</div>
+                                        <div class="comp-value" id="res-ean">-</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comp-label">Manufacturing Date</div>
+                                        <div class="comp-value" id="res-mfg">-</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comp-label">Expiry Date</div>
+                                        <div class="comp-value" id="res-expiry">-</div>
+                                    </div>
+                                    <div class="comparison-item">
+                                        <div class="comp-label">Expiry Health Countdown</div>
+                                        <div class="comp-value highlight-text" id="res-days-left">-</div>
+                                    </div>
+                                </div>
+
+                                <div class="comparison-instructions">
+                                    <h5><i class="fa-solid fa-triangle-exclamation"></i> Floor Action Required:</h5>
+                                    <ul>
+                                        <li>Verify that the physical product's EAN matches <strong id="instruction-ean"></strong>.</li>
+                                        <li>Ensure the printed Expiry Date matches the system date <strong id="instruction-expiry"></strong>.</li>
+                                        <li>If the product is marked as <span class="text-danger">EXPIRED</span>, flag the item and place it in the disposal quarantine bin.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="action-alert" id="action-alert">
+                                    <i class="fa-solid fa-circle-check"></i> System record fetched. Ready for submission.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 2. BULK INGESTION TAB -->
+                <section id="sec-ingestion" class="page-section">
+                    <div class="ingestion-layout">
+                        <!-- Upload Card -->
+                        <div class="glass-card upload-card">
+                            <h3 class="card-title"><i class="fa-solid fa-file-csv"></i> Upload CSV Inventory Dataset</h3>
+                            <p class="section-desc">Ingest physical inventory catalogs into the warehouse database. Supports large files containing millions of items via Celery background workers.</p>
+                            
+                            <div class="upload-dropzone" id="upload-dropzone">
+                                <div class="dropzone-content">
+                                    <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                                    <p class="dropzone-text">Drag and drop your product CSV file here</p>
+                                    <span>or</span>
+                                    <label for="csv-file-input" class="btn btn-secondary btn-sm dropzone-btn">Browse Files</label>
+                                    <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div class="csv-requirements">
+                                <h5>CSV Header Formats</h5>
+                                <p>To ensure database integrity, your CSV file must contain the following headers:</p>
+                                <div class="csv-cols-spec">
+                                    <div class="spec-col"><strong>WID</strong><span class="required-flag">*</span><p>Unique Physical Item ID</p></div>
+                                    <div class="spec-col"><strong>EAN</strong><span class="required-flag">*</span><p>Article Barcode EAN-13</p></div>
+                                    <div class="spec-col"><strong>Manufacturing_Date</strong><p>Mfg Date (YYYY-MM-DD)</p></div>
+                                    <div class="spec-col"><strong>Expiry_Date</strong><p>Expiry Date (YYYY-MM-DD)</p></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ingestion Jobs status tracker -->
+                        <div class="glass-card jobs-card">
+                            <h3 class="card-title"><i class="fa-solid fa-microchip"></i> Active Ingestion Tasks</h3>
+                            
+                            <!-- No Jobs Placeholder -->
+                            <div class="no-jobs" id="no-jobs-placeholder" style="display: none;">
+                                <i class="fa-solid fa-list-check"></i>
+                                <p>No active upload jobs running currently</p>
+                            </div>
+
+                            <div class="jobs-list" id="jobs-list">
+                                <!-- Dynamic jobs will be placed here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 3. QA REPORTING TAB -->
+                <section id="sec-reporting" class="page-section">
+                    <!-- Metrics Row -->
+                    <div class="metrics-row">
+                        <div class="glass-card metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Audited Items</span>
+                                <h3 class="metric-val" id="stat-total">0</h3>
+                            </div>
+                            <div class="metric-icon bg-blue">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Verified (Good)</span>
+                                <h3 class="metric-val text-success" id="stat-good">0</h3>
+                            </div>
+                            <div class="metric-icon bg-green">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Expiring Soon</span>
+                                <h3 class="metric-val text-warning" id="stat-warning">0</h3>
+                            </div>
+                            <div class="metric-icon bg-yellow">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Expired Flagged</span>
+                                <h3 class="metric-val text-danger" id="stat-expired">0</h3>
+                            </div>
+                            <div class="metric-icon bg-red">
+                                <i class="fa-solid fa-ban"></i>
+                            </div>
+                        </div>
+                        <div class="glass-card metric-card">
+                            <div class="metric-info">
+                                <span class="metric-label">Data Mismatches</span>
+                                <h3 class="metric-val text-danger" id="stat-mismatch">0</h3>
+                            </div>
+                            <div class="metric-icon bg-purple">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Control Bar -->
+                    <div class="glass-card reporting-filters">
+                        <div class="filters-form">
+                            <div class="filter-group">
+                                <label for="filter-start-date"><i class="fa-regular fa-calendar"></i> Start Date</label>
+                                <input type="date" id="filter-start-date">
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-end-date"><i class="fa-regular fa-calendar"></i> End Date</label>
+                                <input type="date" id="filter-end-date">
+                            </div>
+                            <div class="filter-group">
+                                <label for="filter-status"><i class="fa-solid fa-filter"></i> Health Status</label>
+                                <select id="filter-status">
+                                    <option value="ALL">All Items</option>
+                                    <option value="Good">Good</option>
+                                    <option value="Expiring Soon">Expiring Soon</option>
+                                    <option value="Expired">Expired</option>
+                                    <option value="Data Mismatch">Data Discrepancy</option>
+                                </select>
+                            </div>
+                            <div class="filter-actions">
+                                <button type="button" id="btn-run-report" class="btn btn-primary">
+                                    <i class="fa-solid fa-rotate"></i> Run Query
+                                </button>
+                                <button type="button" id="btn-export-csv" class="btn btn-secondary">
+                                    <i class="fa-solid fa-download"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Data Grid -->
+                    <div class="glass-card report-grid-card">
+                        <h3 class="card-title"><i class="fa-solid fa-table"></i> Audit Activity Logs</h3>
+                        
+                        <div class="table-container">
+                            <table class="report-table" id="report-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Warehouse ID (WID)</th>
+                                        <th>Barcode EAN</th>
+                                        <th>Operator</th>
+                                        <th>Mfg Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Audit Alert</th>
+                                        <th>Photo proof</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-table-body">
+                                    <tr>
+                                        <td colspan="8" class="table-empty">
+                                            <i class="fa-solid fa-magnifying-glass"></i>
+                                            <p>No query executed. Configure date range above and click "Run Query".</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Image Modal for Fullscreen View -->
+    <div class="modal" id="image-modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <div class="modal-image-wrapper">
+                <img id="modal-img" src="" alt="Photo Proof">
+            </div>
+            <div class="modal-footer">
+                <span id="modal-title-wid">WID: -</span>
+                <span id="modal-title-operator">Checked by: -</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Custom JavaScript -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
