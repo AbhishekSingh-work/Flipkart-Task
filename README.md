@@ -61,6 +61,8 @@ Flipkart Task/
 │   └── perf_test.py          # Automated latency & performance test suite
 ├── requirements.txt          # Python dependencies
 ├── run.py                    # Server startup script
+├── start.bat                 # One-click launcher (Windows)
+├── start.sh                  # One-click launcher (Bash / WSL)
 └── README.md                 # Project documentation
 ```
 
@@ -127,16 +129,40 @@ Visit the web dashboard at: **`http://localhost:8000/`**
 
 ### Option B: Production Stack (Async Mode - Redis Required)
 
-1. Ensure your Redis server is running locally on port `6379`.
+1. Ensure your Redis server is running locally on port `6379` (make sure you have docker running).
+
+   ```
+   docker run -d --name redis -p 6379:6379 redis
+   ```
 2. Start the Celery Worker process in a separate terminal:
+
    ```powershell
    .venv\Scripts\activate
    celery -A app.celery_app worker --loglevel=info -P threads
    ```
 3. Start the FastAPI application server:
+
    ```powershell
    python run.py
    ```
+
+### Option C: Single Script Launcher (Redis + Celery + App)
+
+Launch the entire stack — Redis, Celery worker, and FastAPI server — with a single command. The script handles startup order, health checks, and cleans up all background processes when you press `Ctrl+C`.
+
+**Windows (Command Prompt / PowerShell):**
+
+```powershell
+.\start.bat
+```
+
+**Bash (WSL / Git Bash / Linux / macOS):**
+
+```bash
+bash start.sh
+```
+
+> **Note:** If Redis is not installed, the scripts will log a warning and continue — Celery will automatically fall back to synchronous eager mode, so everything still works.
 
 ---
 

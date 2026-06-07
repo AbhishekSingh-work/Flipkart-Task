@@ -1,4 +1,4 @@
-// --- APEX LOGISTICS VERIFICATION HUB LOGIC ---
+// ---  LOGISTICS VERIFICATION HUB LOGIC ---
 
 document.addEventListener("DOMContentLoaded", () => {
     // --- Global State ---
@@ -756,7 +756,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const link = document.createElement("a");
         const timestampStr = new Date().toISOString().substring(0, 10);
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `apex_qa_report_${timestampStr}.csv`);
+        link.setAttribute("download", `qa_report_${timestampStr}.csv`);
         document.body.appendChild(link);
         
         link.click();
