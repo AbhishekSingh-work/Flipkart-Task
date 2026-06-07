@@ -166,6 +166,8 @@ bash start.sh
 
 > **Note:** If Redis is not installed, the scripts will log a warning and continue — Celery will automatically fall back to synchronous eager mode, so everything still works.
 
+***Highly Recommended to use Redis (For fast background processing)***
+
 ---
 
 ## Running Automated Tests
