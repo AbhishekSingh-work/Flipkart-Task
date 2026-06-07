@@ -1,4 +1,4 @@
-# Logistics - Product Verification System
+# ())Logistics - Product Verification System
 
 Logistics Verification Hub is a high-performance warehouse management companion system. It supports bulk ingestion of catalog datasets, physical barcode/expiry verification on the warehouse floor via mobile/desktop webcam capture, and comprehensive QA compliance auditing.
 
@@ -187,3 +187,22 @@ The test runner will:
 - Validate primary key lookup speeds for various records.
 - Submit a mock physical verification event, complete with label image upload.
 - Fetch the QA Audit Report for verification.
+
+
+***RESULTS:***
+
+***Time taken by the system to upload/process product_data.csv file (438MB) using my current laptop resources was - 3591 secs***
+
+![1780835312873](image/README/1780835312873.png)
+
+***Few Screenshots***
+
+![1780836034705](image/README/1780836034705.png)
+
+![1780836187234](image/README/1780836187234.png)
+
+![1780836078192](image/README/1780836078192.png)
+
+![1780836096293](image/README/1780836096293.png)
+
+![1780836122835](image/README/1780836122835.png)
