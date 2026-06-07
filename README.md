@@ -156,7 +156,7 @@ Launch the entire stack — Redis, Celery worker, and FastAPI server — with a 
 .\start.bat
 ```
 
-Redis will work with docker in windows this script will skip redis and you have to manually run docker desktop (with redis image) to use async processing of data.ocesses when you press
+Redis will work with docker in windows this script will skip redis and you have to manually run docker desktop (with redis image) to use async processing of data.
 
 **Bash (WSL / Git Bash / Linux / macOS):**
 
