@@ -198,12 +198,22 @@ The test runner will:
 
 ***Few Screenshots***
 
+**Product Record fetching**
+
 ![1780836034705](image/README/1780836034705.png)
+
+**Product validation and Submission for verification log**
 
 ![1780836187234](image/README/1780836187234.png)
 
+**Bulk data ingestion**
+
 ![1780836078192](image/README/1780836078192.png)
 
+**QA Report Query Run**
+
 ![1780836096293](image/README/1780836096293.png)
+
+**QA Report Exported to CSV file**
 
 ![1780836122835](image/README/1780836122835.png)
