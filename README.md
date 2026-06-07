@@ -4,6 +4,10 @@ Logistics Verification Hub is a high-performance warehouse management companion 
 
 ---
 
+### Architecture Diagram
+
+![1780844584089](image/README/1780844584089.png)
+
 ## Key Features
 
 1. **High-Speed Bulk Ingestion**:
